@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
 
 // See https://developer.android.com/studio/publish/app-signing#secure-shared-keystore
@@ -25,18 +27,6 @@ android {
     }
     compileSdkVersion 29
     buildToolsVersion '29.0.2'
-
-    defaultConfig {
-        applicationId "app.intra"
-        // The Java code is compatible back to SDK version 14, but gomobile requires
-        // a minSdkVersion of 15.
-        minSdkVersion 15
-        targetSdkVersion 29
-        versionCode 53
-        versionName "1.2.8"
-        vectorDrawables.useSupportLibrary = true
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-    }
     lintOptions {
         // Ignore lint errors that we believe are safe to ignore.
         baseline file("lint-baseline.xml")
@@ -66,6 +56,32 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    flavorDimensions 'tv-dimen'
+    productFlavors {
+        tv {
+            applicationId "app.intra.tv"
+            // The Java code is compatible back to SDK version 14, but gomobile requires
+            // a minSdkVersion of 15.
+            minSdkVersion 15
+            targetSdkVersion 29
+            versionCode 1
+            versionName "1.0.0"
+            vectorDrawables.useSupportLibrary = true
+            testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+            dimension = 'tv-dimen'
+        }
+        mobile {
+            applicationId "app.intra"
+            // The Java code is compatible back to SDK version 14, but gomobile requires
+            // a minSdkVersion of 15.
+            minSdkVersion 15
+            targetSdkVersion 29
+            versionCode 53
+            versionName "1.2.8"
+            vectorDrawables.useSupportLibrary = true
+            testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        }
+    }
 }
 
 crashlytics {
@@ -82,17 +98,16 @@ repositories {
     maven {
         url '../firebase-repo'
     }
+    mavenCentral()
 }
 
 dependencies {
-    // Third-party dependency: OkHttp3
     implementation fileTree(include: [
-            // 3.12.* has branched to support API <21.  3.13+ doesn't.
-            'okhttp-3.12.8.jar',
-            'okio-1.17.5.jar',
             'guava-28.2-android.jar',
             'failureaccess-1.0.1.jar' // Dependency of Guava
     ], dir: 'libs')
+
+    tvImplementation 'androidx.leanback:leanback:1.0.0'
 
     // Third-party test dependencies.
     testImplementation 'junit:junit:4.12'
@@ -118,6 +133,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-config:16.5.0'
     // For go-tun2socks
     implementation project(":tun2socks")
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 // For Firebase Analytics
 apply plugin: 'com.google.gms.google-services'
